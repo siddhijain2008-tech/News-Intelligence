@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Search — NewsIQ{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>🔍 Semantic Search</h1>
+  <p>Finds articles by meaning — not just keywords</p>
+</div>
+<form action="/search" method="get">
+  <div class="search-wrap">
+    <input class="search-input" name="q" value="{{ query }}"
+           placeholder="Why are AI stocks rising? · Climate breakthrough · India economy…" autofocus>
+    <button class="search-btn" type="submit">Search</button>
+  </div>
+  <div class="chips">
+    <a class="chip {% if not selected_category %}active{% endif %}" href="/search?q={{ query }}">All</a>
+    {% for cat in categories %}
+    <a class="chip {% if selected_category==cat %}active{% endif %}"
+       href="/search?q={{ query }}&category={{ cat }}">{{ cat }}</a>
+    {% endfor %}
+  </div>
+</form>
+{% if query %}
+  {% if results %}
+  <p style="color:var(--muted);font-size:.83rem;margin-bottom:14px">
+    <strong style="color:var(--text)">{{ results|length }}</strong> results for "<em>{{ query }}</em>"
+  </p>
+  <div class="grid">
+    {% for r in results %}
+    <div class="card">
+      <span class="score-badge">{{ "%.0f"|format(r.score*100) }}% relevant</span>
+      <span class="card-cat cat-{{ r.category|replace(' ','') }}">{{ r.category }}</span>
+      <div class="card-title"><a href="{{ r.url }}" target="_blank" rel="noopener">{{ r.title }}</a></div>
+      <div class="card-summary">{{ r.text }}</div>
+      <div class="card-meta">🌐 {{ r.source }} · {{ r.published[:16] if r.published else '' }}</div>
+      <div class="card-actions">
+        <button class="action-btn like"    onclick="interact('{{ r.article_id }}','like',this)">👍 Like</button>
+        <button class="action-btn dislike" onclick="interact('{{ r.article_id }}','dislike',this)">👎 Pass</button>
+        <button class="action-btn save"    onclick="interact('{{ r.article_id }}','save',this)">🔖 Save</button>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty"><div class="big">🤷</div><p>No results for "<em>{{ query }}</em>".<br>Try different words or click ↻ Refresh to load more articles.</p></div>
+  {% endif %}
+{% else %}
+<p style="color:var(--muted);margin-bottom:16px;font-size:.88rem">Try these example searches:</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px">
+  {% for ex in ["Why are AI stocks rising?","Latest climate change news","India economy growth","Drug resistant bacteria","SpaceX rocket launch","Tech company layoffs"] %}
+  <a href="/search?q={{ ex }}" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;color:var(--muted);text-decoration:none;font-size:.88rem;display:block;transition:all .15s"
+     onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text)'"
+     onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">🔎 {{ ex }}</a>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Trends — NewsIQ{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>📊 Trend Analysis</h1>
+  <p>What topics are dominating the news right now</p>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px">
+    <h2 style="font-size:.95rem;margin-bottom:16px">📰 Articles by Category</h2>
+    {% set cat_data=data.category_distribution %}
+    {% set max_val=cat_data.values()|max if cat_data else 1 %}
+    {% for cat,count in cat_data.items() %}
+    <div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:3px">
+        <span>{{ cat }}</span><strong>{{ count }}</strong>
+      </div>
+      <div style="background:var(--surface);border-radius:6px;height:7px;overflow:hidden">
+        <div style="background:var(--accent);height:100%;width:{{ (count/max_val*100)|int }}%;border-radius:6px"></div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px">
+    <h2 style="font-size:.95rem;margin-bottom:16px">🔑 Top Keywords</h2>
+    {% set kw_data=data.top_keywords %}
+    {% set max_kw=kw_data.values()|max if kw_data else 1 %}
+    {% for word,count in kw_data.items() %}
+    <div style="margin-bottom:7px">
+      <div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:2px">
+        <span style="color:var(--muted)">{{ word }}</span><strong>{{ count }}</strong>
+      </div>
+      <div style="background:var(--surface);border-radius:4px;height:4px;overflow:hidden">
+        <div style="background:var(--accent2);height:100%;width:{{ (count/max_kw*100)|int }}%;border-radius:4px"></div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:18px">
+  <h2 style="font-size:.95rem;margin-bottom:16px">☁️ Keyword Cloud — click any word to search it</h2>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;line-height:2">
+    {% set kws=data.top_keywords %}{% set vals=kws.values()|list %}
+    {% set max_v=vals|max if vals else 1 %}{% set min_v=vals|min if vals else 0 %}
+    {% for word,count in kws.items() %}
+    {% set pct=((count-min_v)/(max_v-min_v+1)) %}
+    {% set sz=(0.8+pct*1.3)|round(2) %}
+    <a href="/search?q={{ word }}"
+       style="font-size:{{ sz }}rem;color:rgba({{ (108+pct*80)|int }},{{ (99+pct*40)|int }},255,{{ 0.55+pct*0.45 }});text-decoration:none;font-weight:{{ 400+(pct*300)|int }};padding:2px 5px;border-radius:6px;transition:background .15s"
+       onmouseover="this.style.background='var(--surface)'"
+       onmouseout="this.style.background='transparent'">{{ word }}</a>
+    {% endfor %}
+  </div>
+</div>
+<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;text-align:center">
+  <div style="font-size:2.5rem;font-weight:800;color:var(--accent)">{{ data.total_articles }}</div>
+  <div style="color:var(--muted);margin-top:4px">total articles indexed</div>
+</div>
+{% endblock %}

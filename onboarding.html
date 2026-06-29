@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Welcome to NewsIQ</title>
+<style>
+:root{--bg:#0f1117;--surface:#1a1d27;--card:#21253a;--border:#2d3148;--accent:#6c63ff;--accent2:#ff6584;--text:#e8eaf0;--muted:#8892a4}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px;max-width:560px;width:100%}
+.logo{font-size:2rem;font-weight:800;color:var(--accent);margin-bottom:6px}
+.logo span{color:var(--accent2)}
+.subtitle{color:var(--muted);margin-bottom:32px;font-size:.95rem}
+label{display:block;font-size:.82rem;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+input[type=text]{width:100%;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-size:1rem;outline:none;margin-bottom:28px;transition:border .2s}
+input[type=text]:focus{border-color:var(--accent)}
+.interests-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:32px}
+.interest-item{position:relative}
+.interest-item input{position:absolute;opacity:0;width:0;height:0}
+.interest-item label{display:flex;align-items:center;gap:8px;background:var(--card);border:2px solid var(--border);border-radius:12px;padding:12px 14px;cursor:pointer;transition:all .15s;font-size:.85rem;font-weight:600;color:var(--muted);text-transform:none;letter-spacing:0;margin:0}
+.interest-item input:checked + label{border-color:var(--accent);color:var(--text);background:rgba(108,99,255,.12)}
+.interest-item label:hover{border-color:var(--accent);color:var(--text)}
+.hint{font-size:.75rem;color:var(--muted);margin-bottom:24px;margin-top:-20px}
+.btn{width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:12px;padding:14px;color:#fff;font-size:1rem;font-weight:700;cursor:pointer;transition:opacity .15s}
+.btn:hover{opacity:.88}
+.icons{font-size:1.2rem}
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="logo">News<span>IQ</span></div>
+  <p class="subtitle">Your personal AI-powered news intelligence system. Let's set it up.</p>
+  <form method="POST" action="/onboarding">
+    <label>Your Name</label>
+    <input type="text" name="name" placeholder="e.g. Manisha" required autofocus>
+    <label>Pick Your Interests</label>
+    <p class="hint">Choose any topics you care about — we'll personalise your feed instantly.</p>
+    <div class="interests-grid">
+      {% set icons = {"AI":"🤖","Technology":"💻","Business":"📈","Science":"🔬","World":"🌍","India":"🇮🇳","Sports":"⚽","Health":"❤️","Politics":"🏛️","Environment":"🌿"} %}
+      {% for cat in categories %}
+      <div class="interest-item">
+        <input type="checkbox" name="interests" value="{{ cat }}" id="cat_{{ cat }}">
+        <label for="cat_{{ cat }}"><span class="icons">{{ icons.get(cat,'📰') }}</span>{{ cat }}</label>
+      </div>
+      {% endfor %}
+    </div>
+    <button class="btn" type="submit">Start Reading →</button>
+  </form>
+</div>
+</body>
+</html>
