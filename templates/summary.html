@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Digest — NewsIQ{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>📝 Daily Digest</h1>
+  <p>Auto-generated summary of today's top stories</p>
+</div>
+<div class="chips">
+  <a class="chip {% if not selected_category %}active{% endif %}" href="/summary">All</a>
+  {% for cat in categories %}
+  <a class="chip {% if selected_category==cat %}active{% endif %}" href="/summary?category={{ cat }}">{{ cat }}</a>
+  {% endfor %}
+</div>
+<div style="background:linear-gradient(135deg,rgba(108,99,255,.12),rgba(255,101,132,.08));border:1px solid rgba(108,99,255,.3);border-radius:16px;padding:26px;margin-bottom:24px">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+    <span style="font-size:1.3rem">🧠</span>
+    <h2 style="font-size:.95rem;color:var(--accent)">{{ selected_category or 'Top Stories' }} — AI Summary</h2>
+  </div>
+  <p style="line-height:1.8;font-size:.93rem">{{ digest }}</p>
+</div>
+<h2 style="font-size:.82rem;color:var(--muted);margin-bottom:14px;text-transform:uppercase;letter-spacing:.8px">Source Articles</h2>
+<div class="grid">
+  {% for a in articles %}
+  <div class="card">
+    <span class="card-cat cat-{{ a.category|replace(' ','') }}">{{ a.category }}</span>
+    <div class="card-title"><a href="{{ a.url }}" target="_blank" rel="noopener">{{ a.title }}</a></div>
+    <div class="card-summary">{{ a.summary or '' }}</div>
+    <div class="card-meta">🌐 {{ a.source }}</div>
+    <div class="card-actions">
+      <button class="action-btn like" onclick="interact('{{ a.id }}','like',this)">👍 Like</button>
+      <button class="action-btn save" onclick="interact('{{ a.id }}','save',this)">🔖 Save</button>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
